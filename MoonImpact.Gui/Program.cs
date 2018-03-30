@@ -16,7 +16,9 @@ namespace MoonImpact.Gui
     {
         static void Main(string[] args)
         {
-            var form = new RenderForm("SharpDX - MiniTri Direct3D 11 Sample");
+            var form = new RenderForm("Moon Impact Simulator");
+            form.Width = 1280;
+            form.Height = 1024;
 
             // SwapChain description
             var desc = new SwapChainDescription

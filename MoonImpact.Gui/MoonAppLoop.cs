@@ -17,8 +17,10 @@
 
         public MoonAppLoop(RenderForm form, Device device, SwapChain swapChain) : base(form, device, swapChain)
         {
-            _terrain = new Terrain(device, 1024, 1024);
-            _terrain.IsWireframe = true;
+            _terrainTexture = TextureHelper.FromFile(device, @"Content/heightmap-test-8.png", 1);
+
+            _terrain = new Terrain(device, _terrainTexture, 1024, 1024);
+            _terrain.IsWireframe = false;
             _camera = new Camera(_terrain.CameraInput);
             _camera.Distance = 150;
 
@@ -26,7 +28,7 @@
 
             double aspect = form.Width / (double) form.Height;
             double fov = MathUtil.PiOverTwo * aspect;
-            var proj = Matrix.OrthoLH(10, 10 * aspectRatio, -8000, 8000);
+            var proj = Matrix.OrthoLH(10, 10 * aspectRatio, 8000, -8000);
 
             _terrain.CameraInput.Projection = proj;
             

@@ -61,18 +61,27 @@
                 bitmapSource.CopyPixels(stride, buffer);
                 //bitmapSource.CopyPixels(imageBytes, stride);
 
-                return new SharpDX.Direct3D11.Texture2D(device, new SharpDX.Direct3D11.Texture2DDescription()
+                var imageFormat = ConvertImageFormat(bitmapSource.PixelFormat);
+
+                var imageFormatSupport = device.CheckFormatSupport(imageFormat);
+
+                if (mipLevels > 1 && !(imageFormatSupport.HasFlag(FormatSupport.Mip) || imageFormatSupport.HasFlag(FormatSupport.MipAutogen)))
+                {
+                    throw new ArgumentException("Miplevel is > 1 and supported input texture doesn't support generating mips");
+                }
+
+                return new Texture2D(device, new Texture2DDescription
                 {
                     Width = bitmapSource.Size.Width,
                     Height = bitmapSource.Size.Height,
                     ArraySize = 1,
-                    BindFlags = SharpDX.Direct3D11.BindFlags.ShaderResource,
-                    Usage = SharpDX.Direct3D11.ResourceUsage.Immutable,
-                    CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None,
-                    Format = ConvertImageFormat(bitmapSource.PixelFormat),
+                    BindFlags = BindFlags.ShaderResource,
+                    Usage = ResourceUsage.Immutable,
+                    CpuAccessFlags = CpuAccessFlags.None,
+                    Format = imageFormat,
                     MipLevels = mipLevels,
-                    OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None,
-                    SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+                    OptionFlags = ResourceOptionFlags.None,
+                    SampleDescription = new SampleDescription(1, 0),
                 }, new DataRectangle(buffer.DataPointer, stride));
             }
         }

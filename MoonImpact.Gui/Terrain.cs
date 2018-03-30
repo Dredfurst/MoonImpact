@@ -36,14 +36,20 @@
 
         public bool IsWireframe { get; set; }
 
-        public Terrain(Device device, int width, int height)
+        public Terrain(Device device, Texture2D heightmap, int width, int height)
         {
             Width = width;
             Height = height;
             
-            
+            var lightDir = new Vector3(0.25f, 0.25f, 0.75f);
+            lightDir.Normalize();
+
             _effect = new TerrainEffect(device);
-            
+            _effect.SetTexture(device, heightmap);
+            _effect.LightColour = Color.White;
+            _effect.LightAmbientColour = Color.White;
+            _effect.LightDirection = lightDir;
+
             InitializeGrid(device, width, height);
 
             var wireframeModeDescription = RasterizerStateDescription.Default();

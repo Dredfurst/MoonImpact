@@ -21,7 +21,7 @@
         private Matrix _worldViewProjection;
 
         private EffectMatrixVariable _worldViewProjectionParameter, _worldParameter;
-        private EffectVectorVariable _lightDirParameter, _lightColourParameter;
+        private EffectVectorVariable _lightDirParameter, _lightColourParameter, _lightAmbientColourParameter;
         private EffectScalarVariable _heightParameter;
 
         private EffectShaderResourceVariable _textureParameter;
@@ -30,6 +30,7 @@
         
         private float _heightMultiplier = 32;
         private Color _lightColour;
+        private Color _lightAmbientColour;
         private Vector3 _lightDirection;
 
         public Effect Effect => _effect;
@@ -85,6 +86,16 @@
             }
         }
 
+        public Color LightAmbientColour
+        {
+            get => _lightAmbientColour;
+            set
+            {
+                _lightAmbientColour = value;
+                _dirtyFlags |= TerrainDirtyFlags.Lighting;
+            }
+        }
+
         public Vector3 LightDirection
         {
             get => _lightDirection;
@@ -136,6 +147,7 @@
             {
                 _lightColourParameter.Set(_lightColour.ToVector4());
                 _lightDirParameter.Set(new Vector4(_lightDirection, 0));
+                _lightAmbientColourParameter.Set(_lightAmbientColour.ToVector4());
             }
 
             _dirtyFlags = TerrainDirtyFlags.None;
@@ -149,8 +161,7 @@
             _worldParameter = _effect.GetVariableByName("World").AsMatrix();
             if (_worldParameter == null)
                 throw new InvalidOperationException(nameof(_worldParameter) + " cannot be null");
-
-            // todo: texture
+            
             _textureParameter = _effect.GetVariableByName("Tex").AsShaderResource();
             if (_textureParameter == null)
                 throw new InvalidOperationException(nameof(_textureParameter) + " cannot be null");
@@ -166,6 +177,11 @@
 
             if (_lightColourParameter == null)
                 throw new InvalidOperationException(nameof(_lightColourParameter) + " cannot be null");
+            _lightAmbientColourParameter = _effect.GetVariableByName("lightAmbient").AsVector();
+
+            if (_lightAmbientColourParameter == null)
+                throw new InvalidOperationException(nameof(_lightAmbientColourParameter) + " cannot be null");
+
         }
         
         [Flags]

@@ -12,6 +12,7 @@ matrix World;
 float HeightMultiplier;
 float4 lightDirection;
 float4 lightColour;
+float4 lightAmbient;
 
 struct VertexShaderInput
 {
@@ -44,12 +45,11 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	return output;
 }
 
-
 [maxvertexcount(3)]
 void MainGS(triangle VertexShaderOutput input[3], inout TriangleStream<GeometryShaderOutput> output) 
 {
 
-	float3 normal = normalize(cross((input[0].Position - input[1].Position).xyz, (input[2].Position - input[0].Position).xyz));
+	float3 normal = normalize(cross((input[0].WorldPosition - input[1].WorldPosition).xyz, (input[2].WorldPosition - input[0].WorldPosition).xyz));
 	for (int i = 0; i < 3; i++) {
 
 		GeometryShaderOutput o = (GeometryShaderOutput)0;
@@ -61,7 +61,12 @@ void MainGS(triangle VertexShaderOutput input[3], inout TriangleStream<GeometryS
 
 float4 MainPS(GeometryShaderOutput input) : SV_Target
 {
-	return float4(1, 1, 1, 1);
+	input.Normal = normalize(input.Normal);
+	float4 Ia = 0.1f * lightAmbient;
+	// diffuse lighting only
+	float4 Id = saturate(dot(input.Normal, -lightDirection));
+
+	return Ia + Id * lightColour;
 }
 
 technique10 BasicColorDrawing
