@@ -49,6 +49,8 @@
             _effect.LightColour = Color.White;
             _effect.LightAmbientColour = Color.White;
             _effect.LightDirection = lightDir;
+            
+            _effect.Resolution = new Vector3(1 / (float) width, 1 / (float)height, 0);
 
             InitializeGrid(device, width, height);
 
@@ -101,18 +103,36 @@
                     // bottom right
                     var bottomRight =  x + 1 + (y + 1) * width;
 
-                    indicesList.Add(topLeft);
-                    indicesList.Add(topRight);
-                    indicesList.Add(bottomLeft);
+                    // top top right
+                    var topTopRight = x + 1 + Math.Max(0, y - 1) * width;
 
-                    indicesList.Add(bottomLeft);
+                    // top right right
+                    var topRightRight = Math.Min(x + 2, width) + y * width;
+
+                    // bottom bottom left
+                    var bottomBottomLeft = x + Math.Min(y + 2, height) * width;
+
+                    // bottom left left
+                    var bottomLeftLeft = Math.Max(0, x - 1) + (y + 1) * width;
+
+                    indicesList.Add(topLeft);
+                    indicesList.Add(topTopRight);
                     indicesList.Add(topRight);
                     indicesList.Add(bottomRight);
+                    indicesList.Add(bottomLeft);
+                    indicesList.Add(bottomLeftLeft);
+                    
+                    indicesList.Add(bottomLeft);
+                    indicesList.Add(topLeft);
+                    indicesList.Add(topRight);
+                    indicesList.Add(topRightRight);
+                    indicesList.Add(bottomRight);
+                    indicesList.Add(bottomBottomLeft);
                 }
             }
 
 
-            var technique = _effect.Effect.GetTechniqueByIndex(0);
+            //var technique = _effect.Effect.GetTechniqueByIndex(0);
             var pass = _effect.Effect.GetTechniqueByIndex(0).GetPassByIndex(0);
             
             using (var passSignature = pass.Description.Signature)
@@ -142,7 +162,7 @@
             _effect.Apply();
             
             context.InputAssembler.InputLayout = _vertexLayout;
-            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleListWithAdjacency;
             context.InputAssembler.SetVertexBuffers(0, _vertexBufferBinding);
             context.InputAssembler.SetIndexBuffer(_indexBuffer, Format.R32_UInt, 0);
             

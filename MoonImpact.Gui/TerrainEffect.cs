@@ -21,7 +21,7 @@
         private Matrix _worldViewProjection;
 
         private EffectMatrixVariable _worldViewProjectionParameter, _worldParameter;
-        private EffectVectorVariable _lightDirParameter, _lightColourParameter, _lightAmbientColourParameter;
+        private EffectVectorVariable _lightDirParameter, _lightColourParameter, _lightAmbientColourParameter, _resolutionParameter;
         private EffectScalarVariable _heightParameter;
 
         private EffectShaderResourceVariable _textureParameter;
@@ -29,9 +29,11 @@
         private Effect _effect;
         
         private float _heightMultiplier = 32;
+
         private Color _lightColour;
         private Color _lightAmbientColour;
         private Vector3 _lightDirection;
+        private Vector3 _resolution;
 
         public Effect Effect => _effect;
 
@@ -118,6 +120,16 @@
             }
 
         }
+
+        public Vector3 Resolution
+        {
+            get => _resolution;
+            set
+            {
+                _resolution = value;
+                _dirtyFlags |= TerrainDirtyFlags.Lighting;
+            }
+        }
         
         public void Apply()
         {
@@ -148,6 +160,7 @@
                 _lightColourParameter.Set(_lightColour.ToVector4());
                 _lightDirParameter.Set(new Vector4(_lightDirection, 0));
                 _lightAmbientColourParameter.Set(_lightAmbientColour.ToVector4());
+                _resolutionParameter.Set(_resolution);
             }
 
             _dirtyFlags = TerrainDirtyFlags.None;
@@ -181,6 +194,10 @@
 
             if (_lightAmbientColourParameter == null)
                 throw new InvalidOperationException(nameof(_lightAmbientColourParameter) + " cannot be null");
+
+            _resolutionParameter = _effect.GetVariableByName("Resolution").AsVector();
+            if (_resolutionParameter == null)
+                throw new InvalidOperationException(nameof(_resolutionParameter) + " cannot be null");
 
         }
         

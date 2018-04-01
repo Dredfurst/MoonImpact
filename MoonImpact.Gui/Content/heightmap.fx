@@ -4,6 +4,9 @@ Texture2D Tex : register(t0);
 sampler Sampler : register(s0){
 	AddressU = Clamp;
 	AddressV = Clamp;
+	Filter = ANISOTROPIC;
+	MinLOD = 0;
+	MaxLOD = 0;
 };
 
 matrix WorldViewProjection;
@@ -14,6 +17,8 @@ float4 lightDirection;
 float4 lightColour;
 float4 lightAmbient;
 
+float3 Resolution;
+
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
@@ -23,7 +28,7 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
-	float4 WorldPosition : POSITION1;
+	float3 Normal : NORMAL;
 };
 
 struct GeometryShaderOutput{
@@ -31,42 +36,39 @@ struct GeometryShaderOutput{
 	float3 Normal : NORMAL;
 };
 
+float Height(float2 uv)
+{
+	return Tex.SampleLevel(Sampler, uv, 0).x * HeightMultiplier;
+}
+
 VertexShaderOutput MainVS(in VertexShaderInput input)
 {
 	VertexShaderOutput output = (VertexShaderOutput)0; 
-
-	float4 heightInfo = Tex.SampleLevel(Sampler, input.UV, 0);
+	
 	float4 pos = input.Position;
-	pos.z = heightInfo.x * HeightMultiplier;
+	pos.z = Height(input.UV);
+
+	float left = Height(input.UV - Resolution.xz) - Height(input.UV + Resolution.xz);
+	float up = Height(input.UV - Resolution.zy) - Height(input.UV + Resolution.zy);
 
 	output.Position = mul(pos, WorldViewProjection);
-	output.WorldPosition = mul(pos, World);
+	output.Normal.x = left;
+	output.Normal.y = up;
+	output.Normal.z = 2.0f;
+	output.Normal = normalize(output.Normal);
 
 	return output;
 }
 
-[maxvertexcount(3)]
-void MainGS(triangle VertexShaderOutput input[3], inout TriangleStream<GeometryShaderOutput> output) 
-{
-
-	float3 normal = normalize(cross((input[0].WorldPosition - input[1].WorldPosition).xyz, (input[2].WorldPosition - input[0].WorldPosition).xyz));
-	for (int i = 0; i < 3; i++) {
-
-		GeometryShaderOutput o = (GeometryShaderOutput)0;
-		o.Position = input[i].Position;
-		o.Normal = normal;
-		output.Append(o);
-	}
-}
-
-float4 MainPS(GeometryShaderOutput input) : SV_Target
+float4 MainPS(VertexShaderOutput input) : SV_Target
 {
 	input.Normal = normalize(input.Normal);
 	float4 Ia = 0.1f * lightAmbient;
 	// diffuse lighting only
-	float4 Id = saturate(dot(input.Normal, -lightDirection));
-
+	float4 Id = saturate(dot(input.Normal, lightDirection));
+	
 	return Ia + Id * lightColour;
+	return float4(input.Normal, 1);
 }
 
 technique10 BasicColorDrawing
@@ -74,7 +76,7 @@ technique10 BasicColorDrawing
 	pass P0
 	{
 		VertexShader = compile vs_5_0 MainVS();
-		GeometryShader = compile gs_5_0 MainGS();
+		//GeometryShader = compile gs_5_0 MainGS();
 		PixelShader = compile ps_5_0 MainPS();
 	}
 };

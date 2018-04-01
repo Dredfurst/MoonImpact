@@ -17,7 +17,9 @@
 
         public MoonAppLoop(RenderForm form, Device device, SwapChain swapChain) : base(form, device, swapChain)
         {
-            _terrainTexture = TextureHelper.FromFile(device, @"Content/heightmap-test-8.png", 1);
+            const string heightmapPath = @"Content/heightmap-test-8.png";
+
+            _terrainTexture = TextureHelper.FromFile(device, heightmapPath, 1);
 
             _terrain = new Terrain(device, _terrainTexture, 1024, 1024);
             _terrain.IsWireframe = false;
