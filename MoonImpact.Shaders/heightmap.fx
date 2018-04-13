@@ -4,7 +4,7 @@ Texture2D Tex : register(t0);
 sampler Sampler : register(s0){
 	AddressU = Clamp;
 	AddressV = Clamp;
-	Filter = ANISOTROPIC;
+	Filter = MIN_MAG_MIP_LINEAR;
 	MinLOD = 0;
 	MaxLOD = 0;
 };
@@ -54,7 +54,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	output.Position = mul(pos, WorldViewProjection);
 	output.Normal.x = left;
 	output.Normal.y = up;
-	output.Normal.z = 2.0f;
+	output.Normal.z = 2;
 	output.Normal = normalize(output.Normal);
 
 	return output;

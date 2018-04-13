@@ -32,7 +32,7 @@ namespace MoonImpact.Gui
                 FeatureLevel.Level_11_0
             };
 
-            var device = new Device(DriverType.Hardware, flags);
+            var device = new Device(DriverType.Hardware, flags, featureLevels);
 
             var dxgiDevice = device.QueryInterface<SharpDX.DXGI.Device>(); 
             var adapter = dxgiDevice.Adapter;
@@ -41,14 +41,14 @@ namespace MoonImpact.Gui
             // SwapChain description
             var desc = new SwapChainDescription
             {
-                BufferCount = 1,
+                BufferCount = 2,
                 ModeDescription =
                     new ModeDescription(form.ClientSize.Width, form.ClientSize.Height,
                         new Rational(60, 1), Format.R8G8B8A8_UNorm),
                 IsWindowed = true,
                 OutputHandle = form.Handle,
                 SampleDescription = new SampleDescription(1, 0),
-                SwapEffect = SwapEffect.Discard,
+                SwapEffect = SwapEffect.FlipDiscard,
                 Usage = Usage.RenderTargetOutput
             };
 
