@@ -20,8 +20,7 @@
             // New RenderTargetView from the backbuffer
             var backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
             RenderView = new RenderTargetView(device, backBuffer);
-
-
+            
             // Create Depth Buffer & View 
             var depthBuffer = new Texture2D(device, new Texture2DDescription()
             {

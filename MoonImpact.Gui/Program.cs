@@ -53,8 +53,7 @@ namespace MoonImpact.Gui
             };
 
             var swapChain = new SwapChain(factory, device, desc);
-
-            //Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out var device, out var swapChain);
+            
             var context = device.ImmediateContext;
             
             factory.MakeWindowAssociation(form.Handle, WindowAssociationFlags.IgnoreAll);
