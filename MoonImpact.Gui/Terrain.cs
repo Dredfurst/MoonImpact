@@ -46,7 +46,7 @@
 
             _effect = new TerrainEffect(device);
             _effect.SetTexture(device, heightmap);
-            _effect.LightColour = Color.White;
+            _effect.LightColour = Color.DarkGray;
             _effect.LightAmbientColour = Color.White;
             _effect.LightDirection = lightDir;
             

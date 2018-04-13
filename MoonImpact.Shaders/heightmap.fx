@@ -63,11 +63,11 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 float4 MainPS(VertexShaderOutput input) : SV_Target
 {
 	input.Normal = normalize(input.Normal);
-	float4 Ia = 0.1f * lightAmbient;
+	//float4 Ia = 0.1f * lightAmbient;
 	// diffuse lighting only
 	float4 Id = saturate(dot(input.Normal, lightDirection));
 	
-	return Ia + Id * lightColour;
+	return Id * lightColour;
 	return float4(input.Normal, 1);
 }
 

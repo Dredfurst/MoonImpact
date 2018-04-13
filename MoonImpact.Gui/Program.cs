@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpDX;
 
 namespace MoonImpact.Gui
 {
@@ -20,6 +21,23 @@ namespace MoonImpact.Gui
             form.Width = 1280;
             form.Height = 1024;
 
+            var flags = DeviceCreationFlags.None;
+
+            #if DEBUG
+            flags |= DeviceCreationFlags.Debug; 
+            #endif
+
+            FeatureLevel[] featureLevels =
+            {
+                FeatureLevel.Level_11_0
+            };
+
+            var device = new Device(DriverType.Hardware, flags);
+
+            var dxgiDevice = device.QueryInterface<SharpDX.DXGI.Device>(); 
+            var adapter = dxgiDevice.Adapter;
+            var factory = adapter.GetParent<Factory2>();
+
             // SwapChain description
             var desc = new SwapChainDescription
             {
@@ -34,11 +52,11 @@ namespace MoonImpact.Gui
                 Usage = Usage.RenderTargetOutput
             };
 
-            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out var device, out var swapChain);
-            var context = device.ImmediateContext;
+            var swapChain = new SwapChain(factory, device, desc);
 
-            // Ignore all windows events
-            var factory = swapChain.GetParent<Factory>();
+            //Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out var device, out var swapChain);
+            var context = device.ImmediateContext;
+            
             factory.MakeWindowAssociation(form.Handle, WindowAssociationFlags.IgnoreAll);
 
             var appLoop = new MoonAppLoop(form, device, swapChain);

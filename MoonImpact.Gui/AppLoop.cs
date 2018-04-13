@@ -34,10 +34,10 @@
                 Usage = ResourceUsage.Default,
                 BindFlags = BindFlags.DepthStencil,
                 CpuAccessFlags = CpuAccessFlags.None,
-                OptionFlags = ResourceOptionFlags.None
+                OptionFlags = ResourceOptionFlags.None,
             });
 
-            DepthView= new DepthStencilView(device, depthBuffer);
+            DepthView = new DepthStencilView(device, depthBuffer);
 
             _form = form;
             SwapChain = swapChain;

@@ -86,6 +86,7 @@
 
                     _yaw += yawAmount;
                     _pitch += pitchAmount;
+                    _pitch = Math.Max(-Math.PI / 2.0, Math.Min(0, _pitch));
                     _matricesNeedUpdating = true;
                 }
 
