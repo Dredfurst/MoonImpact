@@ -23,12 +23,12 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(in VertexShaderOutput input ) : SV_TARGET
 {    
-    float2 len = float2(0.5f, 0.5f) - input.Position;
+    float2 len = float2(0.5f, 0.5f) - input.UV;
     float x = dot(len, len);
-    float y = 5.0 * x + 0.4;
+    float y = 1 - (5.0 * x + 0.4);
     
     // Output to screen
-    return float4(y,y,y, 0);
+    return float4(y,y,y, y);
 }
 
 

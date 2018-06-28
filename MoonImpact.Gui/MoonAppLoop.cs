@@ -59,7 +59,7 @@
 
             _terrain.CameraInput.Projection = proj;
             
-            _impactEventFactory = new ImpactEventFactory(1, 10, 100, new RectangleF(0, 0, _terrain.Width, _terrain.Height), _terrainRenderTarget);
+            _impactEventFactory = new ImpactEventFactory(500, 10, 100, new RectangleF(0, 0, _terrain.Width, _terrain.Height), _terrainRenderTarget);
 
             InitialiseMoonTerrain(device);
         }
