@@ -16,5 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="heightmap.fx" />
+    <FxCompile Include="crater.fx" />
   </ItemGroup>
 </Project>

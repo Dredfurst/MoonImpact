@@ -1,12 +1,12 @@
-﻿namespace MoonImpact.Gui
-{
-    using System;
-    using System.IO;
-    using SharpDX;
-    using SharpDX.D3DCompiler;
-    using SharpDX.Direct3D11;
-    using Utilities;
+﻿using System;
+using System.IO;
+using MoonImpact.Gui.Utilities;
+using SharpDX;
+using SharpDX.D3DCompiler;
+using SharpDX.Direct3D11;
 
+namespace MoonImpact.Gui.Effects
+{
     public class TerrainEffect : ICameraMatrices, IDisposable
     {
         private const string TerrainEffectFilename = @"Content\heightmap.fx";
@@ -26,7 +26,7 @@
 
         private EffectShaderResourceVariable _textureParameter;
 
-        private Effect _effect;
+        private readonly Effect _effect;
         
         private float _heightMultiplier = 32;
 

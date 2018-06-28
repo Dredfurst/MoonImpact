@@ -1,4 +1,6 @@
-﻿namespace MoonImpact.Gui
+﻿using MoonImpact.Gui.Effects;
+
+namespace MoonImpact.Gui
 {
     using System;
     using System.Collections.Generic;
@@ -10,7 +12,7 @@
     using Buffer = SharpDX.Direct3D11.Buffer;
     using Device = SharpDX.Direct3D11.Device;
 
-    public class Terrain : IDisposable
+    public class Terrain : IDisposable, IComponent
     {
         private int _indexCount;
 
@@ -157,7 +159,11 @@
             _indexCount = indicesList.Count;
         }
 
-        public void Draw(DeviceContext context)
+        public void Initialise(Device device)
+        {
+        }
+
+        public void Draw(DeviceContext context, GameTime time)
         {
             _effect.Apply();
             
@@ -175,6 +181,10 @@
                 context.DrawIndexed(_indexCount, 0, 0);
                 
             }
+        }
+
+        public void Update(GameTime time)
+        {
         }
 
         public void Dispose()

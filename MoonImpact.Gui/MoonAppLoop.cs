@@ -15,11 +15,36 @@
 
         private readonly Texture2D _terrainTexture;
 
+        private readonly RenderTargetView _terrainRenderTarget;
+
+        private readonly ImpactEventFactory _impactEventFactory;
+
         public MoonAppLoop(RenderForm form, Device device, SwapChain swapChain) : base(form, device, swapChain)
         {
-            const string heightmapPath = @"Content/heightmap-test-8.png";
+            var terrainDesc = new Texture2DDescription
+            {
+                Width = 1024,
+                Height = 1024,
+                MipLevels = 1,
+                ArraySize = 1,
+                Format = Format.R16_UNorm,
+                BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
+                CpuAccessFlags = CpuAccessFlags.None,
+                OptionFlags = ResourceOptionFlags.None,
+                Usage = ResourceUsage.Default,
+                SampleDescription = new SampleDescription(1, 0)
+            };
 
-            _terrainTexture = TextureHelper.FromFile(device, heightmapPath, 1);
+            _terrainTexture = new Texture2D(device, terrainDesc);
+            var rtvDesc = new RenderTargetViewDescription
+            {
+                Format = terrainDesc.Format,
+                Dimension = RenderTargetViewDimension.Texture2D,
+                Texture2D = {MipSlice = 0},
+            };
+
+
+            _terrainRenderTarget = new RenderTargetView(device, _terrainTexture, rtvDesc);
 
             _terrain = new Terrain(device, _terrainTexture, 1024, 1024);
             _terrain.IsWireframe = false;
@@ -34,6 +59,9 @@
 
             _terrain.CameraInput.Projection = proj;
             
+            _impactEventFactory = new ImpactEventFactory(1, 10, 100, new RectangleF(0, 0, _terrain.Width, _terrain.Height), _terrainRenderTarget);
+
+            InitialiseMoonTerrain(device);
         }
 
         protected override void Draw(GameTime time)
@@ -41,7 +69,10 @@
             Context.ClearDepthStencilView(DepthView, DepthStencilClearFlags.Depth, 1.0f, 0);
             Context.ClearRenderTargetView(RenderView, Color.Black);
 
-            _terrain.Draw(Context);
+            _impactEventFactory.Draw(Context, time);
+
+            Context.OutputMerger.SetRenderTargets(DepthView, RenderView);
+            _terrain.Draw(Context, time);
 
             base.Draw(time);
         }
@@ -56,7 +87,15 @@
         public override void Dispose()
         {
             _terrain?.Dispose();
+            _terrainRenderTarget?.Dispose();
+            _terrainTexture?.Dispose();
+            _impactEventFactory?.Dispose();
             base.Dispose();
+        }
+
+        private void InitialiseMoonTerrain(Device device)
+        {
+            _impactEventFactory.Initialise(device);
         }
     }
 }

@@ -31,11 +31,6 @@ struct VertexShaderOutput
 	float3 Normal : NORMAL;
 };
 
-struct GeometryShaderOutput{
-	float4 Position : SV_POSITION;
-	float3 Normal : NORMAL;
-};
-
 float Height(float2 uv)
 {
 	return Tex.SampleLevel(Sampler, uv, 0).x * -HeightMultiplier;

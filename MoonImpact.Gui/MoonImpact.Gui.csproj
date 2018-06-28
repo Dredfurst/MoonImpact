@@ -80,11 +80,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppLoop.cs" />
+    <Compile Include="Effects\CraterEffect.cs" />
+    <Compile Include="IComponent.cs" />
+    <Compile Include="ImpactEvent.cs" />
+    <Compile Include="ImpactEventFactory.cs" />
     <Compile Include="MoonAppLoop.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Terrain.cs" />
-    <Compile Include="TerrainEffect.cs" />
+    <Compile Include="Effects\TerrainEffect.cs" />
     <Compile Include="Utilities\Camera.cs" />
     <Compile Include="Utilities\GameTime.cs" />
     <Compile Include="Utilities\ICameraMatrices.cs" />
@@ -94,6 +98,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Content\crater.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\heightmap.cso">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
