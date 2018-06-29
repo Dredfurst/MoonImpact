@@ -33,7 +33,7 @@ struct VertexShaderOutput
 
 float Height(float2 uv)
 {
-	return Tex.SampleLevel(Sampler, uv, 0).x * -HeightMultiplier;
+	return Tex.SampleLevel(Sampler, uv, 0).x * HeightMultiplier;
 }
 
 VertexShaderOutput MainVS(in VertexShaderInput input)

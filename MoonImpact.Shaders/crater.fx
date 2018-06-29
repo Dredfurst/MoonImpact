@@ -28,8 +28,9 @@ float4 MainPS(in VertexShaderOutput input ) : SV_TARGET
 	// y = mx + c
 	// y = (gradient)x + offset
     float y = 5.0 * x + input.UV.z;
+	y = 1 - y;
 	float alpha = 1;
-	if (y > 0.99f)
+	if (y < 0.001)
 	{
 		alpha = 0;
 	}

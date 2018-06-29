@@ -27,7 +27,7 @@
                 Height = 1024,
                 MipLevels = 1,
                 ArraySize = 1,
-                Format = Format.R16_UNorm,
+                Format = Format.R32_Float,
                 BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
                 CpuAccessFlags = CpuAccessFlags.None,
                 OptionFlags = ResourceOptionFlags.None,
@@ -59,7 +59,7 @@
 
             _terrain.CameraInput.Projection = proj;
             
-            _impactEventFactory = new ImpactEventFactory(50000, 10, 100, new RectangleF(0, 0, _terrain.Width, _terrain.Height), _terrainRenderTarget);
+            _impactEventFactory = new ImpactEventFactory(5000, 10, 100, new RectangleF(0, 0, _terrain.Width, _terrain.Height), _terrainRenderTarget);
 
             InitialiseMoonTerrain(device);
         }

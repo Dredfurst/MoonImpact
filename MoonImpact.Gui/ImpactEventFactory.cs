@@ -69,17 +69,18 @@ namespace MoonImpact.Gui
             var blendDesc = BlendStateDescription.Default();
             blendDesc.AlphaToCoverageEnable = true;
             blendDesc.RenderTarget[0].IsBlendEnabled = true;
-            blendDesc.RenderTarget[0].BlendOperation = BlendOperation.Minimum;
-            blendDesc.RenderTarget[0].DestinationBlend = BlendOption.Zero;
+            blendDesc.RenderTarget[0].BlendOperation = BlendOperation.Add;
+            blendDesc.RenderTarget[0].AlphaBlendOperation = BlendOperation.Add;
+            blendDesc.RenderTarget[0].DestinationBlend = BlendOption.One;
             blendDesc.RenderTarget[0].SourceBlend = BlendOption.One;
-            blendDesc.RenderTarget[0].DestinationAlphaBlend = BlendOption.Zero;
+            blendDesc.RenderTarget[0].DestinationAlphaBlend = BlendOption.One;
             blendDesc.RenderTarget[0].SourceAlphaBlend = BlendOption.One;
             _blendState = new BlendState(device, blendDesc);
         }
 
         public void Draw(DeviceContext context, GameTime time)
         {
-            context.ClearRenderTargetView(_renderTarget, Color.White);
+            context.ClearRenderTargetView(_renderTarget, Color.Black);
             context.OutputMerger.SetRenderTargets(_renderTarget);
             
             _effect.Apply();

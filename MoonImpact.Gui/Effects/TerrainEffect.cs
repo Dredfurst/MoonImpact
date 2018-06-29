@@ -28,7 +28,7 @@ namespace MoonImpact.Gui.Effects
 
         private readonly Effect _effect;
         
-        private float _heightMultiplier = 32;
+        private float _heightMultiplier = 3;
 
         private Color _lightColour;
         private Color _lightAmbientColour;
