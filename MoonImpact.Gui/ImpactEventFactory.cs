@@ -15,7 +15,7 @@ namespace MoonImpact.Gui
     {
         private readonly List<ImpactEvent> _impactEvents = new List<ImpactEvent>();
 
-        private readonly RenderTargetView _renderTarget;
+        private RenderTargetView _renderTarget;
         
         private int _indexCount;
 
@@ -31,31 +31,43 @@ namespace MoonImpact.Gui
 
         private InputLayout _vertexLayout;
 
+        private RasterizerState _normalMode;
+        
+        private Texture2D _terrainTexture;
+
+        public Viewport _rtvViewport;
+
         public int NumberOfImpacts { get; }
 
         public float MinimumSize { get; }
 
         public float MaximumSize { get; }
 
-        public RectangleF TerrainDimensions { get; }
+        public Size2 TerrainDimensions { get; }
 
         public IEnumerable<ImpactEvent> ImpactEvents => _impactEvents;
 
-        private RasterizerState _normalMode;
+        public Texture2D TerrainTexture => _terrainTexture;
 
-
-        public ImpactEventFactory(int numberOfImpacts, float minimumSize, float maximumSize, RectangleF terrainDimensions, RenderTargetView renderTarget)
+        public ImpactEventFactory(int numberOfImpacts, float minimumSize, float maximumSize, Size2 terrainDimensions)
         {
             NumberOfImpacts = numberOfImpacts;
             MinimumSize = minimumSize;
             MaximumSize = maximumSize;
             TerrainDimensions = terrainDimensions;
-            _renderTarget = renderTarget;
+            _rtvViewport = new Viewport(0, 0, terrainDimensions.Width, terrainDimensions.Height, 0, 1);
         }
 
         public void Dispose()
         {
-
+            _renderTarget?.Dispose();
+            _indexBuffer?.Dispose();
+            _vertexBuffer?.Dispose();
+            _blendState?.Dispose();
+            _normalMode?.Dispose();
+            _terrainTexture?.Dispose();
+            _effect?.Dispose();
+            _normalMode?.Dispose();
         }
 
         public void Initialise(Device device)
@@ -76,12 +88,40 @@ namespace MoonImpact.Gui
             blendDesc.RenderTarget[0].DestinationAlphaBlend = BlendOption.One;
             blendDesc.RenderTarget[0].SourceAlphaBlend = BlendOption.One;
             _blendState = new BlendState(device, blendDesc);
+
+            
+            var terrainDesc = new Texture2DDescription
+            {
+                Width = TerrainDimensions.Width,
+                Height = TerrainDimensions.Height,
+                MipLevels = 1,
+                ArraySize = 1,
+                Format = Format.R32_Float,
+                BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
+                CpuAccessFlags = CpuAccessFlags.None,
+                OptionFlags = ResourceOptionFlags.None,
+                Usage = ResourceUsage.Default,
+                SampleDescription = new SampleDescription(1, 0)
+            };
+
+            _terrainTexture = new Texture2D(device, terrainDesc);
+            var rtvDesc = new RenderTargetViewDescription
+            {
+                Format = terrainDesc.Format,
+                Dimension = RenderTargetViewDimension.Texture2D,
+                Texture2D = {MipSlice = 0},
+            };
+
+
+            _renderTarget = new RenderTargetView(device, _terrainTexture, rtvDesc);
+            
         }
 
         public void Draw(DeviceContext context, GameTime time)
         {
-            context.ClearRenderTargetView(_renderTarget, Color.Black);
             context.OutputMerger.SetRenderTargets(_renderTarget);
+            context.ClearRenderTargetView(_renderTarget, Color.Black);
+            context.Rasterizer.SetViewport(_rtvViewport);
             
             _effect.Apply();
             
@@ -109,14 +149,13 @@ namespace MoonImpact.Gui
 
         private void InitialiseRandomImpacts()
         {
-            
             var rng = new Random(1);
             for (int i = 0; i < NumberOfImpacts; i++)
             {
                 var width = rng.NextFloat(MinimumSize, MaximumSize) * 0.5f;
                 var depth = rng.NextFloat(MinimumSize, MaximumSize) * 0.5f;
 
-                var center = rng.NextVector2(TerrainDimensions.TopLeft, TerrainDimensions.BottomRight);
+                var center = rng.NextVector2(Vector2.Zero, new Vector2(TerrainDimensions.Width, TerrainDimensions.Height));
 
                 var impact = new ImpactEvent
                 {
@@ -141,14 +180,14 @@ namespace MoonImpact.Gui
 
             var vertices = verticesList.ToArray();
             var indices = indiciesList.ToArray();
-
+            
             _effect = new CraterEffect(device)
             {
-                Projection = Matrix.OrthoOffCenterLH(TerrainDimensions.Left, TerrainDimensions.Right,
-                    TerrainDimensions.Bottom, TerrainDimensions.Top, -1, 1),
                 View = Matrix.Identity,
                 World = Matrix.Identity
             };
+
+            _effect.Projection = Matrix.OrthoOffCenterLH(0, TerrainDimensions.Width, TerrainDimensions.Height, 0, -1, 1);
 
             var pass = _effect.Effect.GetTechniqueByIndex(0).GetPassByIndex(0);
             

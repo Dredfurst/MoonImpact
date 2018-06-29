@@ -37,7 +37,7 @@
             });
 
             DepthView = new DepthStencilView(device, depthBuffer);
-
+            
             _form = form;
             SwapChain = swapChain;
 
@@ -54,6 +54,8 @@
         protected RenderTargetView RenderView { get; }
 
         protected DepthStencilView DepthView { get; }
+
+        protected Viewport Viewport => new Viewport(0, 0, _form.ClientSize.Width, _form.ClientSize.Height, 0.0f, 1.0f);
 
         private readonly GameTime _gameTime = new GameTime();
         private readonly RenderForm _form;
@@ -90,7 +92,7 @@
 
         public void DoDraw(GameTime time)
         {
-            Context.Rasterizer.SetViewport(new Viewport(0, 0, _form.ClientSize.Width, _form.ClientSize.Height, 0.0f, 1.0f));
+            Context.Rasterizer.SetViewport(Viewport);
             Context.OutputMerger.SetTargets(DepthView, RenderView);
 
             Draw(time);
