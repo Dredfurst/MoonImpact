@@ -95,6 +95,7 @@
     <Compile Include="Utilities\RawInput.cs" />
     <Compile Include="Utilities\TextureHelper.cs" />
     <Compile Include="Utilities\VertexPositionTexture.cs" />
+    <Compile Include="Utilities\VertexPositionTexture3.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

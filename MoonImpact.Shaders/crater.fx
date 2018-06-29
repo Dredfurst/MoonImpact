@@ -4,13 +4,13 @@ matrix World;
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
-	float2 UV : TEXCOORD0;
+	float3 UV : TEXCOORD0;
 };
 
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
-	float2 UV : TEXCOORD0;
+	float3 UV : TEXCOORD0;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -23,12 +23,19 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(in VertexShaderOutput input ) : SV_TARGET
 {    
-    float2 len = float2(0.5f, 0.5f) - input.UV;
+    float2 len = float2(0.5f, 0.5f) - input.UV.xy;
     float x = dot(len, len);
-    float y = 1 - (5.0 * x + 0.4);
+	// y = mx + c
+	// y = (gradient)x + offset
+    float y = 5.0 * x + input.UV.z;
+	float alpha = 1;
+	if (y > 0.99f)
+	{
+		alpha = 0;
+	}
     
     // Output to screen
-    return float4(y,y,y, y);
+    return float4(y,y,y, alpha);
 }
 
 

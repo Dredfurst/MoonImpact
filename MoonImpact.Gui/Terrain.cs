@@ -30,6 +30,8 @@ namespace MoonImpact.Gui
 
         private readonly RasterizerState _normalMode;
 
+        private readonly BlendState _blendState;
+
         public int Width { get; }
 
         public int Height { get; }
@@ -64,6 +66,8 @@ namespace MoonImpact.Gui
 
             var normalModeDescription = RasterizerStateDescription.Default();
             _normalMode = new RasterizerState(device, normalModeDescription);
+            
+            _blendState = new BlendState(device, BlendStateDescription.Default());
 
         }
 
@@ -176,6 +180,7 @@ namespace MoonImpact.Gui
             {
                 var pass = _effect.Effect.GetTechniqueByIndex(0).GetPassByIndex(i);
                 context.Rasterizer.State = IsWireframe ? _wireframeMode : _normalMode;
+                context.OutputMerger.BlendState = _blendState;
                 pass.Apply(context);
                 
                 context.DrawIndexed(_indexCount, 0, 0);

@@ -75,21 +75,3 @@ technique10 BasicColorDrawing
 		PixelShader = compile ps_5_0 MainPS();
 	}
 };
-
-/*
-code to generate circular gradients, needs some tweaking and porting to hlsl
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-    // Normalized pixel coordinates (from 0 to 1)
-    vec2 uv = fragCoord/iResolution.xy;
-    
-    vec2 center = vec2(0.5, 0.5);
-    // float distance = distance(uv, center) * 2.0;
-    vec2 len = uv - center;
-    float x = dot(len, len);
-    float y = 5.0 * x + 0.4;
-    
-    // Output to screen
-    fragColor = vec4(y,y,y, 0);
-}
-*/
